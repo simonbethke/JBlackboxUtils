@@ -8,32 +8,24 @@ import java.io.InputStream;
  *
  */
 public class ValueDecoderEliasDeltaUnsigned32Bit extends AbstractValueDecoder{
-
-  /**
-   * Constructs a decoder for the advanced Elias Delta variable bit-length encoding. This decoder returns unsigned values.
-   * @param dataSource
-   */
-  public ValueDecoderEliasDeltaUnsigned32Bit(InputStream dataSource) {
-    super(dataSource);
-  }
   
   private long[] values;
   private int valuesIndex = 0;
   
   @Override
-  public long readValue(int fieldIndex) {
+  public long readValue(InputStream datasource, int fieldIndex) {
     if(valuesIndex % 3 == 0){
       int l = 0;
-      while(!nextBit()) l++;
+      while(!nextBit(datasource)) l++;
       
       int n = 1;     
       for(int i = 0; i < l; i++)
-        n = (n << 1) + (nextBit() ? 1 : 0);
+        n = (n << 1) + (nextBit(datasource) ? 1 : 0);
       n--;
       
       long value = 0;
       for(int i = 0; i < n; i++)
-        value = (value << 1) + (nextBit() ? 1 : 0);
+        value = (value << 1) + (nextBit(datasource) ? 1 : 0);
       
       value += Math.pow(2, n);
     }

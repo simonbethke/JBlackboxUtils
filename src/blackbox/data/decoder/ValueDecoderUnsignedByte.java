@@ -9,22 +9,14 @@ import java.io.InputStream;
  */
 public class ValueDecoderUnsignedByte extends AbstractValueDecoder{
 
-  /**
-   * Constructs a decoder for variable byte length encoding that returns unsigned values.
-   * @param dataSource
-   */
-  public ValueDecoderUnsignedByte(InputStream dataSource) {
-    super(dataSource);
-  }
-
   @Override
-  public long readValue(int fieldIndex) {    
+  public long readValue(InputStream datasource, int fieldIndex) {    
     long next;
     long value = 0;
     int byteCount = 0;
     
     while(true){
-      next = nextByte();
+      next = nextByte(datasource);
       value |= (next & 0b01111111) << (7 * byteCount++);
       if(next < 128)
         return value;

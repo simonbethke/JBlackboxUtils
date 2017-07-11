@@ -1,6 +1,6 @@
-package audio;
+package propsynth.audio;
 
-import physics.MotorArraySample;
+import propsynth.physics.MotorArraySample;
 
 /**
  * Constructs an AudioSample that provides mixing methods

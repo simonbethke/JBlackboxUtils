@@ -1,4 +1,4 @@
-package physics;
+package propsynth.physics;
 
 import sampled.AbstractDataSample;
 

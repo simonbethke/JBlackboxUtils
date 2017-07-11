@@ -41,9 +41,9 @@ public class BlackboxFrame extends AbstractDataSample<long[]>{
    * @return a previous blackbox frame
    */
   public BlackboxFrame getPrevious(int toPast){
-    if(previousFrame == null)
+    if(previousFrame == null || toPast < 1)
       return this;
-    if(toPast == 0)
+    if(toPast == 1)
       return previousFrame;
     return previousFrame.getPrevious(toPast - 1);
   }

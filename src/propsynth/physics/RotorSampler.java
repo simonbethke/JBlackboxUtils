@@ -1,7 +1,7 @@
-package physics;
+package propsynth.physics;
 
+import propsynth.audio.AudioSample;
 import sampled.AbstractSampler;
-import audio.AudioSample;
 import blackbox.BlackboxReader;
 
 /**

@@ -3,9 +3,6 @@ package blackbox.data.predictor;
 import java.util.HashMap;
 import java.util.Map;
 
-import blackbox.data.BlackboxFrame;
-import blackbox.data.BlackboxHeader;
-
 /**
  * Singleton manager for predictors. Use this helper to find the correct predictors and predict values
  * through this class.
@@ -13,9 +10,6 @@ import blackbox.data.BlackboxHeader;
  *
  */
 public class ValuePredictors {
-  private BlackboxFrame currentFrame;
-  private int currentFieldIndex;
-  private BlackboxHeader header;
   private Map<Integer, AbstractValuePredictor> predictorMap;
   private static ValuePredictors instance;
   
@@ -24,39 +18,24 @@ public class ValuePredictors {
    * @return the ValuePredictors instance.
    */
   public static ValuePredictors getInstance(){
+    if(instance == null){
+      instance = new ValuePredictors();
+    }
     return instance;
-  }
-  
-  /**
-   * Provides the context to the value predictors
-   * @param header the BlackboxHeader as context
-   */
-  public static void init(BlackboxHeader header){
-    instance = new ValuePredictors(header);
   }
  
   
-  private ValuePredictors(BlackboxHeader header){
-    this.header = header;
+  private ValuePredictors(){
     predictorMap = new HashMap<Integer, AbstractValuePredictor>();
   }
   
   /**
-   * Get the correct cached predictor by id and make some context data available for it
+   * Get the correct cached predictor by id
    * 
    * @param predictorId the id of the predictor
-   * @param forFrame the context frame
-   * @param forFieldIndex the field index of the field that shall be predicted
    * @return an AbstractValuePredictor
    */
-  public AbstractValuePredictor getPredictor(int predictorId, BlackboxFrame forFrame, int forFieldIndex){
-    currentFrame = forFrame;
-    currentFieldIndex = forFieldIndex;
-    
-    return getPredictor(predictorId);
-  }
-
-  private AbstractValuePredictor getPredictor(int predictorId){
+  public AbstractValuePredictor getPredictor(int predictorId){
     if(predictorMap.get(predictorId) == null){
       predictorMap.put(predictorId, newPredictor(predictorId));
     }
@@ -66,57 +45,32 @@ public class ValuePredictors {
   private AbstractValuePredictor newPredictor(int predictorId){
     switch(predictorId){
       case 0:
-        return new ValuePredictorZero(this);
+        return new ValuePredictorZero();
       case 1:
-        return new ValuePredictorLast(this);
+        return new ValuePredictorLast();
       case 2:
-        return new ValuePredictorLine(this);
+        return new ValuePredictorLine();
       case 3:
-        return new ValuePredictorAverage(this);
+        return new ValuePredictorAverage();
       case 4:
-        return new ValuePredictorMinThrottle(this);
+        return new ValuePredictorMinThrottle();
       case 5:
-        return new ValuePredictorMotor(this);
+        return new ValuePredictorMotor();
       case 6:
-        return new ValuePredictorIncrement(this);
+        return new ValuePredictorIncrement();
       case 7:
-        return new ValuePredictorZero(this); //HomeCoord not Implemented 
+        System.err.println("Predictor with id 7 is not implemented");
+        return new ValuePredictorZero(); //HomeCoord not Implemented 
       case 8:
-        return new ValuePredictor1500(this);
+        return new ValuePredictor1500();
       case 9:
-        return new ValuePredictorVBat(this);
+        return new ValuePredictorVBat();
       case 10:
-        return new ValuePredictorZero(this); //MainFrameTime not Implemented 
+        System.err.println("Predictor with id 10 is not implemented");
+        return new ValuePredictorZero(); //MainFrameTime not Implemented 
       case 11:
-        return new ValuePredictorMinMotor(this);
+        return new ValuePredictorMinMotor();
     }
     return null;
-  }
-
-  /**
-   * Get a frame that is n frames in the past.
-   * @param toPast the number of frames to go back (0 would be the current)
-   * @return a BlackboxFrame
-   */
-  public BlackboxFrame getFrame(int toPast) {
-    if(toPast == 0)
-      return currentFrame;
-    return currentFrame.getPrevious(toPast - 1);
-  }
-
-  /**
-   * Get the index of the current field that shall be predicted
-   * @return the index
-   */
-  public int getCurrentFieldIndex() {
-    return currentFieldIndex;
-  }
-
-  /** Get the blackbox header
-   * 
-   * @return a BlackboxHeader
-   */
-  public BlackboxHeader getHeader() {
-    return header;
   }
 }

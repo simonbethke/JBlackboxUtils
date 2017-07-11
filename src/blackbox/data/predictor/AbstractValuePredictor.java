@@ -1,5 +1,8 @@
 package blackbox.data.predictor;
 
+import blackbox.data.BlackboxFrame;
+import blackbox.data.BlackboxHeader;
+
 /**
  * Base class for all value predictors
  * @author Simon
@@ -10,17 +13,11 @@ public abstract class AbstractValuePredictor{
   protected ValuePredictors predictors;
   
   /**
-   * Base constructor for a value predictor
-   * @param predictors The predictor provider as context
+   * Predicts the value in this frame
+   * @param frame The current frame to predict the value for
+   * @param fieldIndex The index of the field to predict the value for
+   * @param header The blackbox header
+   * @return the predicted value
    */
-  public AbstractValuePredictor(ValuePredictors predictors){
-    this.predictors = predictors;
-  }
-  
-  /**
-   * Adds the prediction to the encoded value from the log
-   * @param base the encoded value 
-   * @return the complete decoded value
-   */
-  public abstract long predictValue(long base);
+  public abstract long predictValue(BlackboxFrame frame, int fieldIndex, BlackboxHeader header);
 }

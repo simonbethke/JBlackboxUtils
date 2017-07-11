@@ -1,5 +1,8 @@
 package blackbox.data.predictor;
 
+import blackbox.data.BlackboxFrame;
+import blackbox.data.BlackboxHeader;
+
 
 /**
  * Predictor that always predicts zero.
@@ -8,16 +11,9 @@ package blackbox.data.predictor;
  */
 public class ValuePredictorZero extends AbstractValuePredictor{
 
-  /**
-   * Constructs the predictor that always predicts zero.
-   * @param predictors
-   */
-  public ValuePredictorZero(ValuePredictors predictors) {
-    super(predictors);
-  }
-
   @Override
-  public long predictValue(long base) {
-    return base;
+  public long predictValue(BlackboxFrame frame, int fieldIndex,
+      BlackboxHeader header) {
+    return 0;
   }
 }

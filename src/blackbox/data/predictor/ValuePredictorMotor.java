@@ -1,6 +1,8 @@
 package blackbox.data.predictor;
 
+import blackbox.data.BlackboxFrame;
 import blackbox.data.BlackboxFrameFormat;
+import blackbox.data.BlackboxHeader;
 
 /**
  * Predictor that always predicts the value of the first motor output in this frame.
@@ -9,23 +11,16 @@ import blackbox.data.BlackboxFrameFormat;
  */
 public class ValuePredictorMotor extends AbstractValuePredictor{
 
-  private int fieldIndex = -1;
-  
-  /**
-   * Constructs a predictor that always predicts the value of the first motor output in this frame.
-   * @param predictors
-   */
-  public ValuePredictorMotor(ValuePredictors predictors) {
-    super(predictors);
-  }
+  private int motorIndex = -1;
 
   @Override
-  public long predictValue(long base) {
-    if(fieldIndex == -1){
-      fieldIndex = predictors.getHeader()
+  public long predictValue(BlackboxFrame frame, int fieldIndex,
+      BlackboxHeader header) {
+    if(motorIndex == -1){
+      motorIndex = header
           .getFieldDefinition(BlackboxFrameFormat.FRAME_TYPE_INTRA)
           .getFieldIndexByName(BlackboxFrameFormat.FRAME_FIELD_MOTOR_1);
     }
-    return base + predictors.getFrame(0).getData()[fieldIndex];
+    return frame.getData()[motorIndex];
   }
 }

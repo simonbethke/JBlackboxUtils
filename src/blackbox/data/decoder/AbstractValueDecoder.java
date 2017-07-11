@@ -11,15 +11,6 @@ import java.io.InputStream;
  *
  */
 public abstract class AbstractValueDecoder{
-  private InputStream dataSource;
-  
-  /**
-   * Constructs this decoder.
-   * @param dataSource Binary data source
-   */
-  public AbstractValueDecoder(InputStream dataSource){
-    this.dataSource = dataSource;
-  }
   
   private int bitByte = 0;
   private int bitIndex = 0;
@@ -32,10 +23,10 @@ public abstract class AbstractValueDecoder{
    * 
    * @return true if the bit is 1
    */
-  protected boolean nextBit(){
+  protected boolean nextBit(InputStream dataSource){
     bitIndex %= Byte.SIZE;
     if(bitIndex == 0){
-      bitByte = nextByte();
+      bitByte = nextByte(dataSource);
     }
     return ((bitByte >> bitIndex++) & 0x01) == 0x01;
   }
@@ -62,7 +53,7 @@ public abstract class AbstractValueDecoder{
    * 
    * @return the next byte from the data source.
    */
-  protected int nextByte(){
+  protected int nextByte(InputStream dataSource){
     try {
       return dataSource.read();
     }
@@ -90,8 +81,9 @@ public abstract class AbstractValueDecoder{
    * The provided fieldIndex may later be used to evaluate if the current value
    * belongs to a group of values that started with previous reads.
    * 
+   * @param dataSource The data source to read from
    * @param fieldIndex The index of this value in the frame
    * @return the decoded value
    */
-  public abstract long readValue(int fieldIndex);
+  public abstract long readValue(InputStream dataSource, int fieldIndex);
 }

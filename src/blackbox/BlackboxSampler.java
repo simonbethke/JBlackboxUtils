@@ -8,7 +8,6 @@ import blackbox.data.BlackboxFrame;
 import blackbox.data.BlackboxFrameFormat;
 import blackbox.data.BlackboxHeader;
 import blackbox.data.decoder.ValueDecoders;
-import blackbox.data.predictor.ValuePredictors;
 
 /**
  * Represents a sampler that provides blackbox samples. These samples are called
@@ -58,8 +57,6 @@ public class BlackboxSampler extends AbstractSampler<BlackboxFrame, long[]>{
     sData = new long[header.getFieldDefinition(BlackboxFrameFormat.FRAME_TYPE_SLOW).getNames().size()];
     eFrameFormat = new BlackboxFrameFormat(BlackboxFrameFormat.FRAME_TYPE_EVENT);
     eFrameFormat.put(BlackboxFrameFormat.FRAME_PROPTERTY_NAME, "event,value");
-    ValueDecoders.init(dataSource);
-    ValuePredictors.init(header);
   }
   
   /**
@@ -117,9 +114,8 @@ public class BlackboxSampler extends AbstractSampler<BlackboxFrame, long[]>{
         BlackboxFrame previousFrame = (type == BlackboxFrameFormat.FRAME_TYPE_INTRA) ? null : ipFrame;
         ipFrame = new BlackboxFrame(ipData, -1, format, previousFrame);        
         for(int i = 0; i < ipData.length; i++){
-          ipData[i] = format.getDecoders().get(i).readValue(i);
-          ipData[i] = ValuePredictors.getInstance().getPredictor(
-              format.getPredictorIds().get(i), ipFrame, i).predictValue(ipData[i]);
+          ipData[i] = format.getPredictor(i).predictValue(ipFrame, i, header);
+          ipData[i] += format.signValue(format.getDecoder(i).readValue(dataSource, i), i);
         }
         ipFrame.setPosition(samplePositionFromData(ipData, format));
         return ipFrame;
@@ -128,9 +124,8 @@ public class BlackboxSampler extends AbstractSampler<BlackboxFrame, long[]>{
         sData = new long[sData.length];
         sFrame = new BlackboxFrame(sData, nextFramePosition, format, sFrame);        
         for(int i = 0; i < sData.length; i++){
-          sData[i] = format.getDecoders().get(i).readValue(i);
-          sData[i] = ValuePredictors.getInstance().getPredictor(
-              format.getPredictorIds().get(i), sFrame, i).predictValue(sData[i]);          
+          sData[i] = format.getPredictor(i).predictValue(ipFrame, i, header);
+          sData[i] += format.signValue(format.getDecoder(i).readValue(dataSource, i), i);
         }        
         return sFrame;
       }
@@ -145,7 +140,7 @@ public class BlackboxSampler extends AbstractSampler<BlackboxFrame, long[]>{
           }
         }
         eData[1] = ValueDecoders.getInstance().getDecoder(
-            eData[0] < 127 ? ValueDecoders.DECODER_KEY_SIGNED_BYTE : ValueDecoders.DECODER_KEY_SIGNED_BYTE).readValue(0);
+            eData[0] < 127 ? ValueDecoders.DECODER_KEY_SIGNED_BYTE : ValueDecoders.DECODER_KEY_SIGNED_BYTE).readValue(dataSource, 0);
         eFrame = new BlackboxFrame(eData, nextFramePosition, eFrameFormat, eFrame);
         return eFrame;
       }

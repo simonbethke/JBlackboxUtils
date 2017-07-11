@@ -1,4 +1,4 @@
-package physics;
+package propsynth.physics;
 
 import blackbox.BlackboxInterpreter;
 import blackbox.BlackboxReader;

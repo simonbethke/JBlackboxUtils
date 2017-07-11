@@ -15,9 +15,8 @@ public class ValueDecoder8SVB extends AbstractValueDecoder{
    * Constructs a decoder for tagged groups of 8 signed variable bytelength values.
    * @param dataSource
    */
-  public ValueDecoder8SVB(InputStream dataSource) {
-    super(dataSource);
-    internalDecoder = new ValueDecoderSignedByte(dataSource);
+  public ValueDecoder8SVB() {
+    internalDecoder = new ValueDecoderSignedByte();
   }
 
   private long[] values;
@@ -25,14 +24,14 @@ public class ValueDecoder8SVB extends AbstractValueDecoder{
   private int lastFieldIndex = -2;
   
   @Override
-  public long readValue(int fieldIndex) {
+  public long readValue(InputStream datasource, int fieldIndex) {
     if(valuesIndex == 0 || lastFieldIndex + 1 != fieldIndex){
       valuesIndex = 0;
       values = new long[Byte.SIZE];
       resetBits();
       for(int i = 0; i < Byte.SIZE; i++)
-        if(nextBit())
-          values[i] = internalDecoder.readValue(fieldIndex);
+        if(nextBit(datasource))
+          values[i] = internalDecoder.readValue(datasource, fieldIndex);
     }
     
     lastFieldIndex = fieldIndex;

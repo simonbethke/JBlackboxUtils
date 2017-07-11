@@ -88,7 +88,7 @@ public abstract class AbstractSampler<T extends AbstractDataSample<D>, D> {
       if(nextInputSample == null) nextInputSample = readInputSample();
       while(nextInputSample != null && nextInputSample.getPosition() <= nextOutputSamplePosition){
         lastInputSample = nextInputSample;
-        nextInputSample = readInputSample();
+        nextInputSample = readInputSample();        
       }
       if(nextInputSample != null){
         double base = lastInputSample.getPosition();      

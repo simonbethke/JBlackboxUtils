@@ -1,4 +1,4 @@
-package physics;
+package propsynth.physics;
 
 /**
  * Represents a simple motor to simulate the constraints of it

@@ -8,6 +8,8 @@ import java.util.Map;
 
 import blackbox.data.decoder.AbstractValueDecoder;
 import blackbox.data.decoder.ValueDecoders;
+import blackbox.data.predictor.AbstractValuePredictor;
+import blackbox.data.predictor.ValuePredictors;
 
 /**
  * Defines the format of a blackbox frame as it has been parsed from the blackbox header
@@ -51,6 +53,11 @@ public class BlackboxFrameFormat {
   public static final String FRAME_PROPTERTY_PREDICTOR = "predictor";
   
   /**
+   * Blackbox Header Entry name for frame-field signature
+   */
+  public static final String FRAME_PROPTERTY_SIGNED = "signed";
+  
+  /**
    * Blackbox Header Entry name for frame-field encoding ids
    */
   public static final String FRAME_PROPTERTY_ENCODING = "encoding";
@@ -72,7 +79,8 @@ public class BlackboxFrameFormat {
 
   private List<String> names;
   private List<AbstractValueDecoder> decoders;
-  private List<Integer> predictorIds;
+  private List<AbstractValuePredictor> predictors;
+  private List<Boolean> signes;
   private BlackboxFrameFormat parentFormat;
   
   /**
@@ -116,32 +124,53 @@ public class BlackboxFrameFormat {
   }
   
   /**
-   * Get a lazily constructed list of decoders in the order as they
-   * are used in this frame format.
-   * @return a List of Implementations of AbstractValueDecoder
+   * Get the correct decoder for the given fieldIndex
+   * @param fieldIndex the index of the field to decode 
+   * @return an AbstractValueDecoder
    */
-  public List<AbstractValueDecoder> getDecoders(){
+  public AbstractValueDecoder getDecoder(int fieldIndex){
     if(decoders == null){
       decoders = new ArrayList<AbstractValueDecoder>();
       for(String decoderId : get(FRAME_PROPTERTY_ENCODING))
         decoders.add(ValueDecoders.getInstance().getDecoder(Integer.parseInt(decoderId)));
     }
-    return decoders;
+    return decoders.get(fieldIndex);
   }
   
   /**
-   * Get a lazily constructed list of predictor ids in the order as they
-   * are used in this frame format.
-   * @return a List of Integers
+   * Get the correct predictor for the given fieldIndex
+   * @param fieldIndex the index of the field to predict 
+   * @return an AbstractValuePredictor
    */
-  public List<Integer> getPredictorIds(){
-    if(predictorIds == null){
-      predictorIds = new ArrayList<Integer>();
+  public AbstractValuePredictor getPredictor(int fieldIndex){
+    if(predictors == null){
+      predictors = new ArrayList<AbstractValuePredictor>();
       for(String predictorId : get(FRAME_PROPTERTY_PREDICTOR))
-        predictorIds.add(Integer.parseInt(predictorId));
+        predictors.add(ValuePredictors.getInstance().getPredictor(Integer.parseInt(predictorId)));
     }
-    return predictorIds;
+    return predictors.get(fieldIndex);
   }
+  
+  /**
+   * Signes the given value as 32bit value if the field definition requires that.
+   * @param value the input value
+   * @param fieldIndex the index of the field the value belongs to
+   * @return the conditionally signed value
+   */
+  public long signValue(long value, int fieldIndex){
+    if(signes == null){
+      signes = new ArrayList<Boolean>();
+      for(String signe : get(FRAME_PROPTERTY_SIGNED))
+        signes.add(Integer.parseInt(signe) == 1);
+    }
+    
+    if(signes.get(fieldIndex)){
+      if(((value >> 31) & 1) == 1)      
+        value = value | 0xFFFFFFFF00000000L;
+    }
+    return value;
+  }
+  
   private String[] get(String key){
     String[] result = entries.get(key);
     if(result == null && parentFormat != null){

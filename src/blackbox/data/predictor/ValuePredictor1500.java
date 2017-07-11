@@ -1,5 +1,8 @@
 package blackbox.data.predictor;
 
+import blackbox.data.BlackboxFrame;
+import blackbox.data.BlackboxHeader;
+
 /**
  * Predictor that always predicts 1500.
  * @author Simon
@@ -7,16 +10,9 @@ package blackbox.data.predictor;
  */
 public class ValuePredictor1500 extends AbstractValuePredictor{
 
-  /**
-   * Constructs the predictor always predicting 1500.
-   * @param predictors
-   */
-  public ValuePredictor1500(ValuePredictors predictors) {
-    super(predictors);
-  }
-
   @Override
-  public long predictValue(long base) {
-    return base + 1500;
+  public long predictValue(BlackboxFrame frame, int fieldIndex,
+      BlackboxHeader header) {
+    return 1500;
   }
 }

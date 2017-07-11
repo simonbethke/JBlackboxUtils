@@ -1,5 +1,6 @@
 package blackbox.data.predictor;
 
+import blackbox.data.BlackboxFrame;
 import blackbox.data.BlackboxHeader;
 
 /**
@@ -8,21 +9,16 @@ import blackbox.data.BlackboxHeader;
  *
  */
 public class ValuePredictorMinThrottle extends AbstractValuePredictor{ 
-  
-  /**
-   * Constructs the predictor that always predicts the min throttle as defined in the header.
-   * @param predictors
-   */
-  public ValuePredictorMinThrottle(ValuePredictors predictors) {
-    super(predictors);
-  }
 
+  private long value = -1;
+  
   @Override
-  public long predictValue(long base) {    
-    if(((base >> 31) & 1) == 1)      
-      base = base | 0xFFFFFFFF00000000L;
+  public long predictValue(BlackboxFrame frame, int fieldIndex,
+      BlackboxHeader header) {    
+    if(value == -1)
+      value = header.getEntryAsLong(BlackboxHeader.HEADER_ENTRY_MIN_THROTTLE);
     
-    return base + predictors.getHeader().getEntryAsLong(BlackboxHeader.HEADER_ENTRY_MIN_THROTTLE);
+    return value;
   }
 
 }

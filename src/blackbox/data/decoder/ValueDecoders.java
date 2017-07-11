@@ -22,7 +22,6 @@ public class ValueDecoders {
   public static final int DECODER_KEY_4S16 = 8;
   public static final int DECODER_KEY_NULL = 9;
   
-  private InputStream dataSource;
   private Map<Integer, AbstractValueDecoder> decoderMap;
   private static ValueDecoders instance;
   
@@ -31,19 +30,12 @@ public class ValueDecoders {
    * @return the ValueDecoders instance.
    */
   public static ValueDecoders getInstance(){
+    if(instance == null)
+      instance = new ValueDecoders();
     return instance;
   }
   
-  /**
-   * Provides the context datasource to the value decoders
-   * @param header the InputStream as datasource
-   */
-  public static void init(InputStream dataSource){
-    instance = new ValueDecoders(dataSource);
-  }
-  
-  private ValueDecoders(InputStream dataSource){
-    this.dataSource = dataSource;
+  private ValueDecoders(){
     decoderMap = new HashMap<Integer, AbstractValueDecoder>();
   }
   
@@ -62,25 +54,25 @@ public class ValueDecoders {
   private AbstractValueDecoder newDecoder(int decoderKey){
     switch(decoderKey){
       case DECODER_KEY_SIGNED_BYTE:
-        return new ValueDecoderSignedByte(dataSource);
+        return new ValueDecoderSignedByte();
       case DECODER_KEY_UNSIGNED_BYTE:
-        return new ValueDecoderUnsignedByte(dataSource);
+        return new ValueDecoderUnsignedByte();
       case DECODER_KEY_UNSIGNED_32BIT:
-        return new ValueDecoderUnsigned32Bit(dataSource);
+        return new ValueDecoderUnsigned32Bit();
       case DECODER_KEY_NEG_14BIT:
-        return new ValueDecoderNeg14Bit(dataSource);
+        return new ValueDecoderNeg14Bit();
       case DECODER_KEY_ELIAS_DELTA_UNSIGNED_32BIT:
-        return new ValueDecoderEliasDeltaUnsigned32Bit(dataSource);
+        return new ValueDecoderEliasDeltaUnsigned32Bit();
       case DECODER_KEY_ELIAS_DELTA_SIGNED_32BIT:
-        return new ValueDecoderEliasDeltaSigned32Bit(dataSource);
+        return new ValueDecoderEliasDeltaSigned32Bit();
       case DECODER_KEY_8SVB:
-        return new ValueDecoder8SVB(dataSource);
+        return new ValueDecoder8SVB();
       case DECODER_KEY_3S32:
-        return new ValueDecoder3S32(dataSource);
+        return new ValueDecoder3S32();
       case DECODER_KEY_4S16:
-        return new ValueDecoder4S16(dataSource);
+        return new ValueDecoder4S16();
       case DECODER_KEY_NULL:
-        return new ValueDecoderNull(dataSource);
+        return new ValueDecoderNull();
     }
     return null;
   }

@@ -1,4 +1,4 @@
-package init;
+package propsynth;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -13,8 +13,8 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
-import physics.RotorSampler;
-import audio.AudioSample;
+import propsynth.audio.AudioSample;
+import propsynth.physics.RotorSampler;
 import blackbox.BlackboxReader;
 
 /**

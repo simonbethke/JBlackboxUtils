@@ -9,17 +9,9 @@ import java.io.InputStream;
  */
 public class ValueDecoderSignedByte extends ValueDecoderUnsignedByte{
 
-  /**
-   * Constructs a decoder for variable byte length encoding that returns signed values.
-   * @param dataSource
-   */
-  public ValueDecoderSignedByte(InputStream dataSource) {
-    super(dataSource);
-  }
-
   @Override
-  public long readValue(int fieldIndex) {
-    long unsigned = super.readValue(fieldIndex);
+  public long readValue(InputStream datasource, int fieldIndex) {
+    long unsigned = super.readValue(datasource, fieldIndex);
     return (unsigned >>> 1) ^ -(unsigned & 0x01);
   }
 
